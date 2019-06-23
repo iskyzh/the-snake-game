@@ -1,8 +1,8 @@
 const WIDTH = 800
 const HEIGHT = 600
-const BLOCK_SIZE = 20
+const BLOCK_SIZE = 10
 const MAX_X = WIDTH / BLOCK_SIZE, MAX_Y = HEIGHT / BLOCK_SIZE
-const UPDATE_RATE = 10
+const UPDATE_RATE = 3
 
 function update_snake($snake_block) {
     $snake_block
@@ -37,25 +37,39 @@ function random_int(x) {
     return Math.floor(Math.random() * x)
 }
 
+function init_snake(size) {
+    return _.map(_.range(size), d => ({ x: size - d, y: 0 }))
+}
+
 $(document).ready(() => {
     const $snake = d3.select("#snake")
         .append("svg")
         .attr("width", WIDTH)
         .attr("height", HEIGHT)
 
-    const snake = [{x: 0, y: 0}]
+    const snake = init_snake(5)
     let food = []
     let dx = 1, dy = 0
     let cnt = 0
+    let score = 0, level = 0
 
     progress_game()
+
+    function update_status() {
+        $("#snake-status").text(`Score ${score} Level ${level}`)
+    }
+
+    function update_level() {
+        level++
+        if (level <= 3) food.push(generate_food()) 
+    }
 
     function generate_food() {
         let x = 0, y = 0
         do {
             x = random_int(MAX_X)
-            y = random_int(MAX_Y)    
-        } while (_.some(snake, s => s.x == x && s.y == y))
+            y = random_int(MAX_Y)
+        } while (_.some(snake, s => s.x == x && s.y == y) || _.some(food, s => s.x == x && s.y == y))
         return { x, y }
     }
 
@@ -77,15 +91,24 @@ $(document).ready(() => {
             snake.unshift({x:_x, y:_y})
 
             // update food location
+
+            let update_food_flag = false
+
             if (food.length == 0) food.push(generate_food())
             food = food.filter(f => {
                 if (f.x == _x && f.y == _y) {
                     snake.push(snake_tail)
-                    food.push(generate_food())
+                    score += 10
+                    update_food_flag = true
                     return false
                 }
                 return true
             })
+
+            if (update_food_flag) {
+                food.push(generate_food())
+                if (score % 20 == 0) update_level()
+            }
 
             if (is_game_over()) location.reload()
 
@@ -107,6 +130,8 @@ $(document).ready(() => {
                 .append("rect")
                 .call(create_food)
             $food_block.exit().remove()
+
+            update_status()
         }
         window.requestAnimationFrame(progress_game)
     }
