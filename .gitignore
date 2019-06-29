@@ -1,2 +1,17 @@
+<<<<<<< HEAD
 node_modules/
 dist/
+=======
+pom.xml
+*jar
+/lib/
+/classes/
+/out/
+/release/
+/target/
+.lein-deps-sum
+.lein-repl-history
+.lein-plugins/
+.repl*
+/node_modules/
+>>>>>>> c59717f... initial commit
