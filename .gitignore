@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-node_modules/
-dist/
-=======
+
 pom.xml
 *jar
 /lib/
@@ -14,4 +11,3 @@ pom.xml
 .lein-plugins/
 .repl*
 /node_modules/
->>>>>>> c59717f... initial commit
